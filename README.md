@@ -44,6 +44,19 @@ If you get a script execution policy error, run:
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
+**PowerShell gotchas**
+
+- Run the script and its arguments on **one line**. Do not press Enter after the script name; the flags belong to that same command.
+- `".\dorkgen.ps1"` in quotes by itself only **prints text** — it does not run the script. To run: `.\dorkgen.ps1 ...` or `& .\dorkgen.ps1 ...`.
+- If Windows PowerShell suggests `.\.\dorkgen.ps1`, you can ignore it and use `.\dorkgen.ps1` from the repo folder.
+- Quote CSV values so commas are not split: `--filetypes "pdf,xlsx"` and `--exclude "sample,demo"`.
+
+Example (copy as one block):
+
+```powershell
+.\dorkgen.ps1 --objective public-documents --domain contoso.com --keyword "quarterly report" --filetypes "pdf,xlsx" --exclude "sample,demo"
+```
+
 ### Native CMD (no install)
 
 ```cmd
