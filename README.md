@@ -2,6 +2,13 @@
 
 An open-source Python CLI that asks what you are trying to find, takes your target details, and generates copy-ready Google dork queries to speed up search workflow.
 
+## About
+
+DorkSINT is an open-source Python CLI that speeds up Google dorking by turning your search objective into structured, paste-ready queries.
+It supports both interactive prompts and non-interactive flags, includes reusable query templates, and runs natively in both PowerShell and CMD.
+
+Built for legal, authorized security research and defensive reconnaissance workflows.
+
 ## Features
 
 - Interactive prompts for objective and target details.
@@ -31,6 +38,12 @@ dorkgen --interactive
 .\dorkgen.ps1 --interactive
 ```
 
+If you get a script execution policy error, run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
 ### Native CMD (no install)
 
 ```cmd
@@ -41,6 +54,37 @@ dorkgen.cmd --interactive
 
 ```bash
 dorkgen --objective public-documents --domain example.com --keyword payroll --filetypes pdf,docx --exclude sample,test
+```
+
+## PowerShell Quick Start
+
+### 1) Clone and enter the repo
+
+```powershell
+cd $env:USERPROFILE\Documents
+git clone https://github.com/DiggityDooo/DorkSINT.git
+cd DorkSINT
+```
+
+### 2) Run directly (no install)
+
+```powershell
+.\dorkgen.ps1 --interactive
+```
+
+### 3) Run with flags
+
+```powershell
+.\dorkgen.ps1 --objective public-documents --domain example.com --keyword payroll
+```
+
+### 4) Optional install for `dorkgen` command
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e .
+dorkgen --interactive
 ```
 
 ## Objectives
