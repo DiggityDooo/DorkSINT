@@ -1,0 +1,10 @@
+@echo off
+setlocal
+set "PYTHONPATH=%~dp0src"
+where py >nul 2>&1
+if %errorlevel%==0 (
+  py -3 -m dorkgen.cli %*
+  goto :eof
+)
+python -m dorkgen.cli %*
+
