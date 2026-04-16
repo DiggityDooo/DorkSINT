@@ -131,7 +131,7 @@ dorkgen --interactive
 
 ## Catalog source and scope
 
-- The curated JSON catalog is adapted from [mitocondria40/OSINT-dork-tool](https://github.com/mitocondria40/OSINT-dork-tool), specifically the dork definitions in `script.js` (`dorksData` structure).
+- The curated JSON catalog is adapted from other OSINT tools specifically the dork definitions in `script.js` (`dorksData` structure).
 - DorkSINT defaults to `sec` (CYBER_INTEL) entries.
 - `media` (FILE_HUNTER) entries are present but only available when the user opts in with `--include-file-hunter`.
 
