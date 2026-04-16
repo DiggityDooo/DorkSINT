@@ -1,0 +1,254 @@
+[
+  {
+    "id": "sec.attack-surface-mapping.exposed-login-endpoints",
+    "mode": "sec",
+    "category": "Attack Surface Mapping",
+    "label": "Exposed login endpoints",
+    "dork": "inurl:login OR inurl:signin OR inurl:auth"
+  },
+  {
+    "id": "sec.attack-surface-mapping.admin-areas",
+    "mode": "sec",
+    "category": "Attack Surface Mapping",
+    "label": "Admin areas",
+    "dork": "inurl:admin OR inurl:dashboard"
+  },
+  {
+    "id": "sec.attack-surface-mapping.public-staging-environments",
+    "mode": "sec",
+    "category": "Attack Surface Mapping",
+    "label": "Public staging environments",
+    "dork": "inurl:staging OR inurl:preprod OR inurl:uat"
+  },
+  {
+    "id": "sec.exposed-documents.pdf-documents",
+    "mode": "sec",
+    "category": "Exposed Documents",
+    "label": "PDF documents",
+    "dork": "filetype:pdf"
+  },
+  {
+    "id": "sec.exposed-documents.spreadsheets",
+    "mode": "sec",
+    "category": "Exposed Documents",
+    "label": "Spreadsheets",
+    "dork": "filetype:xls OR filetype:xlsx OR filetype:csv"
+  },
+  {
+    "id": "sec.exposed-documents.open-directories",
+    "mode": "sec",
+    "category": "Exposed Documents",
+    "label": "Open directories",
+    "dork": "intitle:\"index of\""
+  },
+  {
+    "id": "sec.cloud-storage-exposure.amazon-s3-references",
+    "mode": "sec",
+    "category": "Cloud Storage Exposure",
+    "label": "Amazon S3 references",
+    "dork": "inurl:s3.amazonaws.com"
+  },
+  {
+    "id": "sec.cloud-storage-exposure.azure-blob-references",
+    "mode": "sec",
+    "category": "Cloud Storage Exposure",
+    "label": "Azure Blob references",
+    "dork": "inurl:blob.core.windows.net"
+  },
+  {
+    "id": "sec.source-code-exposure.git-metadata",
+    "mode": "sec",
+    "category": "Source Code Exposure",
+    "label": "Git metadata",
+    "dork": "inurl:.git/config"
+  },
+  {
+    "id": "sec.source-code-exposure.ci-config-files",
+    "mode": "sec",
+    "category": "Source Code Exposure",
+    "label": "CI config files",
+    "dork": "filename:.github/workflows OR filename:.gitlab-ci.yml"
+  },
+  {
+    "id": "sec.secrets-tokens.api-key-references",
+    "mode": "sec",
+    "category": "Secrets & Tokens",
+    "label": "API key references",
+    "dork": "intext:\"api_key\" OR intext:\"client_secret\""
+  },
+  {
+    "id": "sec.secrets-tokens.private-key-blocks",
+    "mode": "sec",
+    "category": "Secrets & Tokens",
+    "label": "Private key blocks",
+    "dork": "intext:\"BEGIN PRIVATE KEY\""
+  },
+  {
+    "id": "sec.server-config-leaks.environment-files",
+    "mode": "sec",
+    "category": "Server Config Leaks",
+    "label": "Environment files",
+    "dork": "filename:.env"
+  },
+  {
+    "id": "sec.logs-debug-output.stack-traces",
+    "mode": "sec",
+    "category": "Logs & Debug Output",
+    "label": "Stack traces",
+    "dork": "intext:\"Exception in thread\" OR intext:\"Traceback\""
+  },
+  {
+    "id": "sec.database-exposure.sql-dumps",
+    "mode": "sec",
+    "category": "Database Exposure",
+    "label": "SQL dumps",
+    "dork": "filetype:sql intext:\"CREATE TABLE\""
+  },
+  {
+    "id": "sec.database-exposure.database-backups",
+    "mode": "sec",
+    "category": "Database Exposure",
+    "label": "Database backups",
+    "dork": "filetype:bak OR filetype:dump"
+  },
+  {
+    "id": "sec.backup-archive-discovery.zip-backups",
+    "mode": "sec",
+    "category": "Backup & Archive Discovery",
+    "label": "ZIP backups",
+    "dork": "filetype:zip (backup OR dump)"
+  },
+  {
+    "id": "sec.admin-panel-discovery.common-admin-paths",
+    "mode": "sec",
+    "category": "Admin Panel Discovery",
+    "label": "Common admin paths",
+    "dork": "inurl:admin OR inurl:administrator"
+  },
+  {
+    "id": "sec.api-reconnaissance.swagger-ui",
+    "mode": "sec",
+    "category": "API Reconnaissance",
+    "label": "Swagger UI",
+    "dork": "inurl:swagger OR inurl:api-docs"
+  },
+  {
+    "id": "sec.api-reconnaissance.graphql-endpoints",
+    "mode": "sec",
+    "category": "API Reconnaissance",
+    "label": "GraphQL endpoints",
+    "dork": "inurl:graphql"
+  },
+  {
+    "id": "sec.authentication-flows.password-reset-pages",
+    "mode": "sec",
+    "category": "Authentication Flows",
+    "label": "Password reset pages",
+    "dork": "inurl:reset-password OR inurl:forgot-password"
+  },
+  {
+    "id": "sec.network-services.exposed-elasticsearch",
+    "mode": "sec",
+    "category": "Network Services",
+    "label": "Exposed Elasticsearch",
+    "dork": "intitle:\"You Know, for Search\""
+  },
+  {
+    "id": "sec.iot-exposure.webcam-interfaces",
+    "mode": "sec",
+    "category": "IoT Exposure",
+    "label": "Webcam interfaces",
+    "dork": "intitle:\"IP Camera\" OR inurl:/view/view.shtml"
+  },
+  {
+    "id": "sec.container-orchestration.kubernetes-dashboards",
+    "mode": "sec",
+    "category": "Container & Orchestration",
+    "label": "Kubernetes dashboards",
+    "dork": "intitle:\"Kubernetes Dashboard\""
+  },
+  {
+    "id": "sec.vulnerability-research.xss-parameter-candidates",
+    "mode": "sec",
+    "category": "Vulnerability Research",
+    "label": "XSS parameter candidates",
+    "dork": "inurl:q= OR inurl:search= OR inurl:query="
+  },
+  {
+    "id": "sec.vulnerability-research.open-redirect-parameters",
+    "mode": "sec",
+    "category": "Vulnerability Research",
+    "label": "Open redirect parameters",
+    "dork": "inurl:redirect= OR inurl:return= OR inurl:url="
+  },
+  {
+    "id": "sec.people-organization-osint.job-postings",
+    "mode": "sec",
+    "category": "People & Organization OSINT",
+    "label": "Job postings",
+    "dork": "inurl:careers OR inurl:jobs"
+  },
+  {
+    "id": "sec.slack-chat-leaks.slack-tokens",
+    "mode": "sec",
+    "category": "Slack & Chat Leaks",
+    "label": "Slack tokens",
+    "dork": "intext:\"xoxb-\" OR intext:\"xoxp-\""
+  },
+  {
+    "id": "sec.werkzeug-flask-debug.werkzeug-debuggers",
+    "mode": "sec",
+    "category": "Werkzeug & Flask Debug",
+    "label": "Werkzeug debuggers",
+    "dork": "intitle:\"Werkzeug\" inurl:debugger"
+  },
+  {
+    "id": "sec.jira-project-management.jira-instances",
+    "mode": "sec",
+    "category": "JIRA & Project Management",
+    "label": "JIRA instances",
+    "dork": "inurl:jira OR inurl:browse/PROJ"
+  },
+  {
+    "id": "media.general-web-file-finder.open-file-indexes",
+    "mode": "media",
+    "category": "General Web File Finder",
+    "label": "Open file indexes",
+    "dork": "intitle:\"index of\""
+  },
+  {
+    "id": "media.general-web-file-finder.pdf-files",
+    "mode": "media",
+    "category": "General Web File Finder",
+    "label": "PDF files",
+    "dork": "filetype:pdf"
+  },
+  {
+    "id": "media.movies-tv-series.hd-movies-series",
+    "mode": "media",
+    "category": "Movies & TV Series",
+    "label": "HD Movies & Series (720p/1080p)",
+    "dork": "intitle:\"index of\" (mkv|mp4) (1080p|720p) -html -htm"
+  },
+  {
+    "id": "media.people-search.professional-profiles",
+    "mode": "media",
+    "category": "People Search",
+    "label": "Professional profiles",
+    "dork": "site:linkedin.com/in"
+  },
+  {
+    "id": "media.company-intelligence.annual-reports",
+    "mode": "media",
+    "category": "Company Intelligence",
+    "label": "Annual reports",
+    "dork": "filetype:pdf \"annual report\""
+  },
+  {
+    "id": "media.social-media-discovery.twitter-profiles",
+    "mode": "media",
+    "category": "Social Media Discovery",
+    "label": "X / Twitter profiles",
+    "dork": "site:x.com OR site:twitter.com"
+  }
+]

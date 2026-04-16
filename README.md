@@ -9,11 +9,15 @@ It supports both interactive prompts and non-interactive flags, includes reusabl
 
 Built for legal, authorized security research and defensive reconnaissance workflows.
 
+**DorkSINT is entirely terminal-based.** There is no webapp, static site, or browser-based UI in scope. All interaction happens through the CLI.
+
 ## Features
 
 - Interactive prompts for objective and target details.
+- Menu-based catalog browser with prompt UI for CMD/PowerShell readability.
 - Non-interactive mode for scripts/automation.
 - Multiple query variants per request (title-based, URL-based, filetype-based).
+- Curated catalog import from DorkSearch categories with security-first defaults.
 - Basic input validation and sanitization.
 
 ## Install
@@ -69,6 +73,24 @@ dorkgen.cmd --interactive
 dorkgen --objective public-documents --domain example.com --keyword payroll --filetypes pdf,docx --exclude sample,test
 ```
 
+### Catalog menu UI
+
+```bash
+dorkgen --menu
+```
+
+Enable FILE_HUNTER entries explicitly:
+
+```bash
+dorkgen --menu --include-file-hunter
+```
+
+### Non-interactive catalog mode
+
+```bash
+dorkgen --catalog-id sec.attack-surface-mapping.exposed-login-endpoints --domain example.com --keyword auth
+```
+
 ## PowerShell Quick Start
 
 ### 1) Clone and enter the repo
@@ -107,6 +129,12 @@ dorkgen --interactive
 - `public-backups`
 - `configuration-files`
 
+## Catalog source and scope
+
+- The curated JSON catalog is adapted from [mitocondria40/OSINT-dork-tool](https://github.com/mitocondria40/OSINT-dork-tool), specifically the dork definitions in `script.js` (`dorksData` structure).
+- DorkSINT defaults to `sec` (CYBER_INTEL) entries.
+- `media` (FILE_HUNTER) entries are present but only available when the user opts in with `--include-file-hunter`.
+
 ## Development
 
 ```bash
@@ -125,3 +153,5 @@ MIT. See `LICENSE`.
 ## Legal and Ethical Notice
 
 This tool is provided for legal, authorized security research and defensive reconnaissance only. You are responsible for following all applicable laws, terms of service, and policies in your jurisdiction. Do not use this tool to access systems, data, or services without explicit permission.
+
+`--include-file-hunter` may expose queries that are inappropriate in some environments. Use only where policy and legal scope explicitly allow it.
