@@ -5,7 +5,7 @@ An open-source Python CLI that asks what you are trying to find, takes your targ
 ## About
 
 DorkSINT is an open-source Python CLI that speeds up Google dorking by turning your search objective into structured, paste-ready queries.
-It supports both interactive prompts and non-interactive flags, includes reusable query templates, and runs natively in both PowerShell and CMD.
+It supports both interactive prompts and non-interactive flags, includes reusable query templates, and runs natively in both PowerShell, Command prompt, Fish, Bash, Etc.
 
 Built for legal, authorized security research and defensive reconnaissance workflows.
 
