@@ -2,17 +2,58 @@
 
 from __future__ import annotations
 
+import os
 import shutil
+import sys
 import textwrap
 import webbrowser
-from typing import Iterable, List, Sequence
+from typing import Iterable, List, Optional, Sequence, TextIO
 
 from dorkgen.catalog import CatalogItem, build_google_url, compose_query
 from dorkgen.templates import TEMPLATES
 
+# ANSI color codes used for terminal styling.
+_RESET = "\x1b[0m"
+_BORDER = "1;36"   # bold cyan
+_TITLE = "1;37"    # bold white
+_ACCENT = "1;32"   # bold green
+_DIM = "2"         # dim
+
+# Color override: None means auto-detect, True/False forces the behavior.
+_COLOR_OVERRIDE: Optional[bool] = None
+
+
+def set_color_override(value: Optional[bool]) -> None:
+    """Force color on/off (True/False) or restore auto-detection (None)."""
+    global _COLOR_OVERRIDE
+    _COLOR_OVERRIDE = value
+
+
+def _use_color(stream: Optional[TextIO] = None) -> bool:
+    """Return True when ANSI color should be emitted to ``stream``."""
+    stream = stream or sys.stdout
+    if _COLOR_OVERRIDE is not None:
+        if not _COLOR_OVERRIDE:
+            return False
+    else:
+        if os.environ.get("NO_COLOR"):
+            return False
+        if os.environ.get("TERM", "") == "dumb":
+            return False
+    try:
+        return bool(stream.isatty())
+    except Exception:
+        return False
+
+
+def _colorize(text: str, code: str, stream: Optional[TextIO] = None) -> str:
+    """Wrap ``text`` in an ANSI color code when color is enabled."""
+    if not _use_color(stream):
+        return text
+    return f"\x1b[{code}m{text}{_RESET}"
+
 
 def _supports_unicode() -> bool:
-    import sys
     try:
         encoding = sys.stdout.encoding or ""
         if encoding.lower().replace("-", "") not in ("utf8", "utf16", "utf32"):
@@ -44,6 +85,14 @@ def _frame_lines(title: str, lines: Sequence[str]) -> str:
     ]
     result.extend(f"{vertical} {line.ljust(inner)} {vertical}" for line in wrapped)
     result.append(f"{bottom_left}{horizontal * (width - 2)}{bottom_right}")
+
+    if _use_color():
+        # Color whole lines so the visible width math above stays correct
+        # (ANSI escape codes are zero-width on screen).
+        result[0] = _colorize(result[0], _BORDER)
+        result[1] = _colorize(result[1], _TITLE)
+        result[2] = _colorize(result[2], _BORDER)
+        result[-1] = _colorize(result[-1], _BORDER)
     return "\n".join(result)
 
 
@@ -112,3 +161,69 @@ def print_output_panel(dorks: Sequence[str]) -> None:
 def print_supported_objectives() -> None:
     lines = [f"- {key}: {template.name}" for key, template in TEMPLATES.items()]
     print(_frame_lines("Objectives", lines))
+
+
+_BANNER_UNICODE = r"""
+ ____             _    ____ ___ _   _ _____
+|  _ \  ___  _ __| | _/ ___|_ _| \ | |_   _|
+| | | |/ _ \| '__| |/ \___ \| ||  \| | | |
+| |_| | (_) | |  |   < ___) | || |\  | | |
+|____/ \___/|_|  |_|\_\____/___|_| \_| |_|
+"""
+
+_BANNER_ASCII = r"""
+ ___          _   ___ ___ _  _ _____
+|   \ ___ _ _| |_/ __|_ _| \| |_   _|
+| |) / _ \ '_| / \__ \| || .` | | |
+|___/\___/_| |_\_\___/___|_|\_| |_|
+"""
+
+_TAGLINE = "Terminal-first Google dork generator  -  authorized recon only"
+
+
+def print_banner(stream: Optional[TextIO] = None) -> None:
+    """Print the DorkSINT banner. Defaults to stderr to keep stdout clean."""
+    stream = stream or sys.stderr
+    art = _BANNER_UNICODE if _supports_unicode() else _BANNER_ASCII
+    print(_colorize(art, _BORDER, stream), file=stream)
+    print(_colorize("  " + _TAGLINE, _DIM, stream), file=stream)
+    print(file=stream)
+
+
+def print_plain(dorks: Sequence[str], stream: Optional[TextIO] = None) -> None:
+    """Print dorks one per line with no framing, ideal for piping/scripting."""
+    stream = stream or sys.stdout
+    for dork in dorks:
+        print(dork, file=stream)
+
+
+def format_catalog_lines(items: Sequence[CatalogItem]) -> List[str]:
+    """Build one greppable line per catalog item: id, taxonomy, and dork."""
+    if not items:
+        return []
+    id_width = max(len(item.id) for item in items)
+    lines: List[str] = []
+    for item in items:
+        ident = _colorize(item.id.ljust(id_width), _ACCENT)
+        taxonomy = f"{item.category} / {item.label}"
+        sep = _colorize("::", _DIM)
+        lines.append(f"{ident}  {taxonomy}  {sep}  {item.dork}")
+    return lines
+
+
+def print_catalog_list(
+    items: Sequence[CatalogItem],
+    stream: Optional[TextIO] = None,
+) -> None:
+    """Print catalog entries as greppable lines to stdout.
+
+    Designed for fast terminal discovery, e.g. ``dorkgen --list | grep s3``.
+    A short summary is written to stderr so it never pollutes a pipe.
+    """
+    stream = stream or sys.stdout
+    for line in format_catalog_lines(items):
+        print(line, file=stream)
+    modes = sorted({item.mode for item in items})
+    noun = "entry" if len(items) == 1 else "entries"
+    summary = f"{len(items)} catalog {noun}  (modes: {', '.join(modes) or 'none'})"
+    print(_colorize(summary, _DIM, sys.stderr), file=sys.stderr)

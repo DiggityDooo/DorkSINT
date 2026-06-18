@@ -52,6 +52,25 @@ def items_for_category(
     return matches
 
 
+def search_catalog(items: Iterable[CatalogItem], term: str) -> List[CatalogItem]:
+    """Return catalog items whose id, category, label, or dork matches ``term``.
+
+    Matching is case-insensitive and substring-based for fast terminal lookups.
+    An empty term returns all items unchanged.
+    """
+    needle = term.strip().lower()
+    if not needle:
+        return list(items)
+    matches: List[CatalogItem] = []
+    for item in items:
+        haystack = " ".join(
+            (item.id, item.category, item.label, item.dork)
+        ).lower()
+        if needle in haystack:
+            matches.append(item)
+    return matches
+
+
 def get_by_id(items: Iterable[CatalogItem], item_id: str) -> CatalogItem | None:
     """Return catalog item by stable id."""
     for item in items:
