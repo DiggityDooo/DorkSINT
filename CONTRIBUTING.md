@@ -13,7 +13,8 @@ Thanks for contributing to Google Dork CLI.
 
 ```bash
 python -m venv .venv
-. .venv/Scripts/activate
+source .venv/bin/activate          # Linux/macOS
+# .\.venv\Scripts\Activate.ps1     # Windows PowerShell
 pip install -e . pytest
 ```
 

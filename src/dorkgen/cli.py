@@ -4,11 +4,28 @@ from __future__ import annotations
 
 import argparse
 import sys
+import webbrowser
 from typing import List
 
+from dorkgen import __version__
 from dorkgen.builder import DorkRequest, build_dorks
-from dorkgen.catalog import compose_query, get_by_id, load_catalog
-from dorkgen.console_ui import print_output_panel, prompt_home_choice, run_catalog_browser
+from dorkgen.catalog import (
+    build_google_url,
+    compose_query,
+    get_by_id,
+    load_catalog,
+    search_catalog,
+)
+from dorkgen.clipboard import copy_to_clipboard
+from dorkgen.console_ui import (
+    print_banner,
+    print_catalog_list,
+    print_output_panel,
+    print_plain,
+    prompt_home_choice,
+    run_catalog_browser,
+    set_color_override,
+)
 from dorkgen.templates import TEMPLATES, objective_choices
 from dorkgen.validators import split_csv, validate_domain
 
@@ -40,6 +57,49 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         "--interactive",
         action="store_true",
         help="Force interactive prompts even when flags are provided.",
+    )
+    parser.add_argument(
+        "--list",
+        dest="list_catalog",
+        action="store_true",
+        help="List catalog entries as greppable lines and exit.",
+    )
+    parser.add_argument(
+        "--search",
+        default="",
+        metavar="TERM",
+        help="Filter the catalog by TERM (id/category/label/dork) and exit.",
+    )
+    parser.add_argument(
+        "--plain",
+        action="store_true",
+        help="Print dorks as plain lines (no box), ideal for piping.",
+    )
+    parser.add_argument(
+        "--open",
+        dest="open_browser",
+        action="store_true",
+        help="Open the first generated query in your default browser.",
+    )
+    parser.add_argument(
+        "--copy",
+        action="store_true",
+        help="Copy the first generated query to the system clipboard.",
+    )
+    parser.add_argument(
+        "--no-color",
+        action="store_true",
+        help="Disable ANSI colors in terminal output.",
+    )
+    parser.add_argument(
+        "--no-banner",
+        action="store_true",
+        help="Do not print the startup banner.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"DorkSINT {__version__}",
     )
     return parser.parse_args(argv)
 
@@ -88,8 +148,34 @@ def _from_flags(args: argparse.Namespace) -> DorkRequest:
     )
 
 
-def _print_output(dorks: List[str]) -> None:
-    print_output_panel(dorks)
+def _print_output(dorks: List[str], plain: bool) -> None:
+    if plain:
+        print_plain(dorks)
+    else:
+        print_output_panel(dorks)
+
+
+def _post_actions(dorks: List[str], args: argparse.Namespace) -> None:
+    """Run optional clipboard/browser side effects on the generated dorks."""
+    if not dorks:
+        return
+    primary = dorks[0]
+    if args.copy:
+        tool = copy_to_clipboard(primary)
+        if tool:
+            print(f"Copied first query to clipboard via {tool}.", file=sys.stderr)
+        else:
+            print(
+                "Clipboard copy unavailable (install wl-copy, xclip, or xsel).",
+                file=sys.stderr,
+            )
+    if args.open_browser:
+        url = build_google_url(primary)
+        try:
+            webbrowser.open(url)
+            print(f"Opening: {url}", file=sys.stderr)
+        except Exception:
+            print(f"Could not open a browser. URL: {url}", file=sys.stderr)
 
 
 def _run_catalog_from_id(args: argparse.Namespace) -> List[str]:
@@ -106,6 +192,18 @@ def _run_catalog_from_id(args: argparse.Namespace) -> List[str]:
         keyword=args.keyword.strip(),
     )
     return [query]
+
+
+def _run_catalog_list(args: argparse.Namespace) -> int:
+    """Print catalog entries (optionally filtered by --search) and return code."""
+    items = load_catalog(include_file_hunter=args.include_file_hunter)
+    if args.search:
+        items = search_catalog(items, args.search)
+        if not items:
+            print(f"No catalog entries match: {args.search}", file=sys.stderr)
+            return EXIT_OK
+    print_catalog_list(items)
+    return EXIT_OK
 
 
 def _run_menu(args: argparse.Namespace) -> List[str]:
@@ -138,6 +236,15 @@ def main(argv: List[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     args = parse_args(argv)
 
+    if args.no_color:
+        set_color_override(False)
+
+    if not args.no_banner and not args.plain and sys.stderr.isatty():
+        print_banner()
+
+    if args.list_catalog or args.search:
+        return _run_catalog_list(args)
+
     conflict = _validate_flag_conflicts(args)
     if conflict:
         print(f"Error: {conflict}", file=sys.stderr)
@@ -164,7 +271,8 @@ def main(argv: List[str] | None = None) -> int:
         print("\nCancelled by user.", file=sys.stderr)
         return EXIT_INTERRUPT
 
-    _print_output(dorks)
+    _print_output(dorks, plain=args.plain)
+    _post_actions(dorks, args)
     return EXIT_OK
 
 
